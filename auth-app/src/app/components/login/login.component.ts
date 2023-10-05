@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -14,7 +16,12 @@ export class LoginComponent {
   eyeIcon: string = "fa-eye-slash";
   loginForm!: FormGroup;
 
-  constructor(private fb : FormBuilder, private auth: AuthService) {}
+  constructor(
+    private fb : FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private toast:NgToastService
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -34,10 +41,12 @@ export class LoginComponent {
       this.auth.login(this.loginForm.value)
       .subscribe({
         next:(res)=>{
-          alert(res.message)
+          this.toast.info({detail: "Nada planificado para hoy.", duration:5000});
+          this.loginForm.reset();
+          this.router.navigate(['dashboard']);
         },
         error:(err)=>{
-          alert(err?.error.message)          
+          this.toast.error({detail: "ERROR", summary:"Usuario o Contraseña incorrecto.", duration:5000});   
         }
       })
     } else {
