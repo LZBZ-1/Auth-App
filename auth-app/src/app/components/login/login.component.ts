@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import { AuthService } from 'src/app/services/auth.service';
+import { ValidateForm } from 'src/app/helpers/validateForm';
 
 @Component({
   selector: 'app-login',
@@ -41,8 +42,10 @@ export class LoginComponent {
       this.auth.login(this.loginForm.value)
       .subscribe({
         next:(res)=>{
-          this.toast.info({detail: "Nada planificado para hoy.", duration:5000});
           this.loginForm.reset();
+          console.info(res.accessToken)
+          this.auth.storeToken(res.accessToken);
+          this.toast.info({detail: "Nada planificado para hoy.", duration:5000});
           this.router.navigate(['dashboard']);
         },
         error:(err)=>{
@@ -50,21 +53,8 @@ export class LoginComponent {
         }
       })
     } else {
-      this.validateAllFormFields(this.loginForm)
-      alert("Your form is invalid.")
+      ValidateForm.validateAllFormFields(this.loginForm)
+      this.toast.error({detail: "ERROR", summary:"Ingrese un Usuario o Contraseña primero.", duration:5000});
     }
   }
-
-  private validateAllFormFields(formGroup:FormGroup) {
-    Object.keys(formGroup.controls).forEach(field => {
-      const control = formGroup.get(field);
-
-      if(control instanceof FormControl) {
-        control.markAsDirty({onlySelf:true});
-      } else if(control instanceof FormGroup) {
-        this,this.validateAllFormFields(control);
-      }
-    })
-  }
-
 }

@@ -20,7 +20,7 @@ import { NgToastModule } from 'ng-angular-popup';
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgToastModule
+    NgToastModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
